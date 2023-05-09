@@ -1,7 +1,7 @@
 package com.example.chatai.data.repository
 
-import com.example.chatai.data.dto.ChatDto
-import com.example.chatai.data.mappers.toChatMap
+import com.example.chatai.data.dto.ChatRequestDto
+import com.example.chatai.data.mappers.toChatModel
 import com.example.chatai.data.remote.OpenAiApi
 import com.example.chatai.domain.model.ChatModel
 import com.example.chatai.domain.repository.ChatRepository
@@ -12,12 +12,12 @@ class ChatRepositoryImpl @Inject constructor(
     private val api: OpenAiApi
 ): ChatRepository {
 
-    override suspend fun getChatData(completion: ChatDto): Resource<ChatModel> {
+    override suspend fun getChatData(completion: ChatRequestDto): Resource<ChatModel> {
         return try {
             Resource.Success(
                 data = api.getAnswear(
                     completion = completion
-                ).toChatMap()
+                ).toChatModel()
             )
         } catch (e: Exception) {
             e.printStackTrace()
