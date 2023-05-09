@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Chat AI</string>
+    <string name="api_openAI_key">aw</string>
 </resources>
