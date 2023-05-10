@@ -18,6 +18,6 @@ interface OpenAiApi {
     ): ChatDto
 
     companion object {
-        const val api_key = "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"
+        const val api_key = "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"
     }
 }

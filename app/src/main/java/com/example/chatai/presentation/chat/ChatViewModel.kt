@@ -7,12 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatai.data.mappers.toChatRequestDto
 import com.example.chatai.domain.model.ChatRequest
+import com.example.chatai.domain.model.MessageModel
+import com.example.chatai.domain.model.SenderEnum
 import com.example.chatai.domain.repository.ChatRepository
 import com.example.chatai.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.lang.Exception
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,27 +30,34 @@ class ChatViewModel @Inject constructor(
         when (event) {
             is ChatEvent.sendMessage -> {
                 viewModelScope.launch {
+                    _state.value = state.value.copy(
+                        duringSending = true
+                    )
+
                     val complitionRequest = ChatRequest(
                         value = _state.value.text
                     ).toChatRequestDto()
 
-                    _state.value = state.value.copy(
-                        text = "",
-                        userMessage = _state.value.text
+                    addNewMessage(
+                        message = _state.value.text,
+                        sender = SenderEnum.USER
                     )
 
                     when (val result = repository.getChatData(complitionRequest)) {
                         is Resource.Success -> {
-                            _state.value = state.value.copy(
-                                botMessage = result.data?.text ?: "Bot can`t answear!"
+                            addNewMessage(
+                                message = result.data?.text ?: "Bot can`t answear!",
+                                sender = SenderEnum.BOT
                             )
-
-                            Log.d("bot", _state.value.botMessage)
                         }
                         is Resource.Error -> {
                             Log.d("Error", "Error during taking data")
                         }
                     }
+
+                    _state.value = state.value.copy(
+                        duringSending = false
+                    )
                 }
             }
 
@@ -57,5 +67,21 @@ class ChatViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun addNewMessage(message: String, sender: SenderEnum) {
+        if (sender == SenderEnum.USER) {
+            _state.value = state.value.copy(
+                text = ""
+            )
+        }
+
+        _state.value.messages.add(
+            MessageModel(
+                message = message,
+                sender = sender,
+                time = Calendar.getInstance().timeInMillis
+            )
+        )
     }
 }

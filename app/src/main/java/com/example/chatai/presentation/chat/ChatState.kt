@@ -1,7 +1,9 @@
 package com.example.chatai.presentation.chat
 
+import com.example.chatai.domain.model.MessageModel
+
 data class ChatState (
-    val userMessage: String = "",
-    val botMessage: String = "",
-    val text: String = ""
+    val messages: MutableList<MessageModel> = mutableListOf(),
+    val text: String = "",
+    val duringSending: Boolean = false
 )
