@@ -6,8 +6,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import javax.inject.Singleton
 
@@ -17,10 +18,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideChatAiApi(app: Application): OpenAiApi {
+    fun provideHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatAiApi(httpClient: OkHttpClient): OpenAiApi {
         return Retrofit.Builder()
             .baseUrl("https://api.openai.com/")
-            .addConverterFactory(MoshiConverterFactory.create())
+            .client(httpClient)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create()
     }

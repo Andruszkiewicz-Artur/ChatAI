@@ -1,7 +1,7 @@
 package com.example.chatai.presentation.chat
 
-class ChatState {
-    var userMessage = ""
-    var botMessage = ""
-    var text: String = ""
-}
+data class ChatState (
+    val userMessage: String = "",
+    val botMessage: String = "",
+    val text: String = ""
+)

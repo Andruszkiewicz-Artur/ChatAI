@@ -2,7 +2,9 @@ package com.example.chatai.data.remote
 
 import com.example.chatai.data.dto.ChatDto
 import com.example.chatai.data.dto.ChatRequestDto
+import com.example.chatai.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -16,6 +18,6 @@ interface OpenAiApi {
     ): ChatDto
 
     companion object {
-        const val api_key = "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"
+        const val api_key = "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"
     }
 }
