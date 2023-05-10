@@ -29,35 +29,37 @@ class ChatViewModel @Inject constructor(
     fun onEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.sendMessage -> {
-                viewModelScope.launch {
-                    _state.value = state.value.copy(
-                        duringSending = true
-                    )
+                if (_state.value.text.isNotBlank()) {
+                    viewModelScope.launch {
+                        _state.value = state.value.copy(
+                            duringSending = true
+                        )
 
-                    val complitionRequest = ChatRequest(
-                        value = _state.value.text
-                    ).toChatRequestDto()
+                        val complitionRequest = ChatRequest(
+                            value = _state.value.text
+                        ).toChatRequestDto()
 
-                    addNewMessage(
-                        message = _state.value.text,
-                        sender = SenderEnum.USER
-                    )
+                        addNewMessage(
+                            message = _state.value.text,
+                            sender = SenderEnum.USER
+                        )
 
-                    when (val result = repository.getChatData(complitionRequest)) {
-                        is Resource.Success -> {
-                            addNewMessage(
-                                message = result.data?.text ?: "Bot can`t answear!",
-                                sender = SenderEnum.BOT
-                            )
+                        when (val result = repository.getChatData(complitionRequest)) {
+                            is Resource.Success -> {
+                                addNewMessage(
+                                    message = result.data?.text ?: "Bot can`t answear!",
+                                    sender = SenderEnum.BOT
+                                )
+                            }
+                            is Resource.Error -> {
+                                Log.d("Error", "Error during taking data")
+                            }
                         }
-                        is Resource.Error -> {
-                            Log.d("Error", "Error during taking data")
-                        }
+
+                        _state.value = state.value.copy(
+                            duringSending = false
+                        )
                     }
-
-                    _state.value = state.value.copy(
-                        duringSending = false
-                    )
                 }
             }
 
@@ -78,7 +80,7 @@ class ChatViewModel @Inject constructor(
 
         _state.value.messages.add(
             MessageModel(
-                message = message,
+                message = message.replace("\n", ""),
                 sender = sender,
                 time = Calendar.getInstance().timeInMillis
             )
